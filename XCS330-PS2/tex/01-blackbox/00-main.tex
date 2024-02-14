@@ -1,0 +1,38 @@
+\section*{Data Processing and Black-Box Meta-Learning}
+
+\textbf{Goals:} In this assignment, we will look at meta-learning for few shot classification. You will:
+\begin{enumerate}
+    \item Learn how to process and partition data for meta learning problems, where training is done over a distribution of training tasks $p(\mathcal{T})$.
+    \item Implement and train memory augmented neural networks, a black-box meta-learner that uses a recurrent neural network \cite{pmlr-v48-santoro16}.
+    \item Analyze the learning performance for different size problems.
+    \item Experiment with model parameters and explore how they improve performance.
+\end{enumerate}
+
+We will be working with Omniglot~\cite{Lake1332}, a dataset with 1623 characters from 50 different languages. Each character has 20 28x28 images.
+We are interested in training models for $K$-shot, $N$-way classification, i.e. training a classifier to distinguish between $N$ previously unseen characters, given only $K$ labeled examples of each character.
+
+\textbf{Coding Deliverables}
+
+For this assignment, please submit the following files to gradescope to recieve points for coding questions:
+\begin{itemize}
+    \item |submission.pdf|
+    \item |src/submission/__init__.py|
+    \item |src/submission/load_data.py|
+    \item |src/submission/mann.py|
+    \item |src/mann_results_1_2.npy|
+    \item |src/mann_results_2_2.npy|
+    \item |src/mann_results_1_3.npy|
+    \item |src/mann_results_1_4.npy|
+\end{itemize}
+
+\clearpage
+
+\begin{enumerate}
+	\input{01-blackbox/01-data-processing}
+    \input{01-blackbox/02-mann}
+    \input{01-blackbox/03-train-and-analysis}
+    \input{01-blackbox/04-experiment}
+\end{enumerate}
+
+
+\clearpage
