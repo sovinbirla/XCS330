@@ -41,6 +41,7 @@ def main(config):
 
     print("Using device: ", device)
 
+
     torch.manual_seed(config.random_seed)
 
     writer = SummaryWriter(
