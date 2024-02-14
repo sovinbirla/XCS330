@@ -1,0 +1,19 @@
+\item \points{2} {\bf Implement Forward}
+
+In the second part of the problem you need to implement 
+the \texttt{forward\_with\_embedding\_sharing} and 
+
+\texttt{forward\_without\_embedding\_sharing} methods of the 
+\texttt{MultitaskNet} module. 
+
+
+Both forward methods above receive a batch of $(\text{userID}_i, \text{itemID}_j)$ 
+of user-item pairs. The model should output a probability $p_{ij}$ of 
+shape $(batch\_size,)$ that user $i$ would watch movie $j$, 
+given by Eq. \ref{eq:prob} and a predicted score $\hat{r}_{ij}$ 
+of shape $(batch\_size,)$ the user $i$ would assign to movie $j$, 
+given by Eq. \ref{eq:reg}. 
+
+\textbf{Be careful with output tensor shapes!}
+
+\clearpage

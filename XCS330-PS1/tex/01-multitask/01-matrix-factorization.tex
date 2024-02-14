@@ -1,0 +1,18 @@
+\item {\bf Implement MultiTaskNet Model}
+
+The first part of the assignment is to implement the above model in \texttt{submission.py}. First you need to define each component when the model is initialized. 
+
+\begin{enumerate}
+    \item \points{1a} Consider the matrix $\mathbf{U} = [\mathbf{u}_1\mid,\ldots,\mid \mathbf{u}_{N_{\text{users}}}]\in\mathbb{R}^{N_{\text{users}}\times d}$, $\mathbf{Q} = [\mathbf{q}_1\mid,\ldots,\mid\mathbf{q}_{N_{\text{items}}}]\in\mathbb{R}^{N_{\text{items}}\times d}$, $\mathbf{A} = [a_1, \ldots, a_{N_{\text{users}}}]\in \mathbb{R}^{N_{\text{users}}\times 1}$, $\mathbf{B} = [b_1, \ldots, b_{N_{\text{items}}}]\in \mathbb{R}^{N_{\text{items}}\times 1}$. Implement $\mathbf{U}$ and $\mathbf{Q}$ as \texttt{ScaledEmbedding} layers  with parameter $d=\texttt{embedding\_dim}$ and $\mathbf{A}$ and $\mathbf{B}$ as \texttt{ZeroEmbedding} layers with parameter $d=1$ (defined in \texttt{submission.py}). These are instances of \href{https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html}{PyTorch Embedding} layers with a different weight initialization, which facilitates better convergence.
+    When \texttt{embedding\_sharing=False} we will set separate latent vector representations used in the distinct factorization and regression tasks $\mathbf{U_{reg}}, \mathbf{U_{fact}}, \mathbf{Q_{reg}}, \mathbf{Q_{fact}}$ of similar type and dimensions of $\mathbf{U}, \mathbf{Q}$. \textbf{Note: }Order does matter here! Please declare the layers in the order
+    they are returned.
+    
+    Please complete the following functions in \texttt{submission.py}:
+    \begin{enumerate}
+        \item \texttt{init\_shared\_user\_and\_item\_embeddings}
+        \item \texttt{init\_separate\_user\_and\_item\_embeddings}
+        \item \texttt{init\_user\_and\_item\_bias}
+    \end{enumerate}
+
+    \item \points{1b} Next implement $f_{\theta}([\mathbf{u}_i, \mathbf{q}_j, \mathbf{u}_i * \mathbf{q}_j])$ as an MLP network. The class \texttt{MultiTaskNet} has \texttt{layer\_sizes} argument, which is a list of the input shapes of each dense layer. Notice that by default $\texttt{embedding\_dim}$=32, while the input size of the first layer is 96, since we concatenate $[\mathbf{u}_i, \mathbf{q}_j, \mathbf{u}_i * \mathbf{q}_j]$ before processing it through the network. Each layer (except the final layer) should be followed by a ReLU activation. The final layer should output the final user-item predicted score in and have an output size of 1. Please complete the \texttt{init\_mlp\_layers} function in \texttt{submission.py}.
+\end{enumerate}
