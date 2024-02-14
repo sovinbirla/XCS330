@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARG_DEVICE=--device=${1:-'cpu'}
+ARG_DEVICE=--device=${1:-'gpu'}
 
 ARG_COMPILE=--${2:-'no-compile'}
 

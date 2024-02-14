@@ -10,7 +10,7 @@ from main import train_step
 # Import submission
 import submission
 
-device = torch.device("cpu")
+device = torch.device("gpu")
 
 #############################################
 # HELPER FUNCTIONS FOR CREATING TEST INPUTS #
