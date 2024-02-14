@@ -16,6 +16,7 @@ if use_submission:
 
 
 def train_step(images, labels, model, optim, eval=False):
+    # testing
 
     predictions = model(images, labels)
     loss = model.loss_function(predictions, labels)
