@@ -19,6 +19,7 @@ VERSION = 'v0.2.0'
 
 VARIANTS = ('100K', '1M', '10M', '20M')
 
+# need somehting else
 DATA_DIR = 'movielens_data'
 
 
