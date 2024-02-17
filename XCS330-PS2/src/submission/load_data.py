@@ -111,7 +111,7 @@ class DataGenerator(IterableDataset):
         if self.image_caching:
             self.stored_images[filename] = image
         return image
-
+    
     def _sample(self, sample_fn=None, shuffle_fn=None):
         """
         Samples a batch for training, validation, or testing
@@ -122,7 +122,7 @@ class DataGenerator(IterableDataset):
             A tuple of (1) Image batch and (2) Label batch:
                 1. image batch has shape [K+1, N, 784] and is a numpy array
                 2. label batch has shape [K+1, N, N] and is a numpy array
-            where K is the number of "shots", N is number of classes
+            where K is the number of "shots", N is the number of classes
         Note:
             1. The numpy functions np.random.shuffle and np.eye (for creating)
             one-hot vectors would be useful.
@@ -134,9 +134,9 @@ class DataGenerator(IterableDataset):
             
             3. The value for `self.num_samples_per_class` will be set to K+1 
             since for K-shot classification you need to sample K supports and 
-            1 query. // Intersting
+            1 query.
 
-            4. PyTorch uses float32 as default for representing model parameters. 
+            4. PyTorch uses float32 as the default for representing model parameters. 
             You would need to return numpy arrays with the same datatype
         """
 
@@ -146,61 +146,57 @@ class DataGenerator(IterableDataset):
         if shuffle_fn is None:
             shuffle_fn = self.shuffle_fn
 
-        # #############################
-        # ### START CODE HERE ###
-        
-        # #all characters
-
+        # Get the number of classes (N) and the number of samples per class (K)
         N = self.num_classes
         K = self.num_samples_per_class
 
-        images = []
+        # Sample N different classes
+        diff_characters = sample_fn(self.folders, N)
 
-        # print("self.folders, ", len(self.folders)) #all characters
-        # print("N:", N)
-        # print("K:", K)
+        # Create one-hot encoded labels for the sampled classes
+        image_labels = np.eye(N) 
 
-        diff_characters = sample_fn(self.folders, N) # diff character sampling through folders
+        # Get K+1 samples for each sampled class
+        characters = get_images(diff_characters, image_labels, nb_samples=K)
 
-        # print("diff_characters: ", diff_characters) # N classes of characters
-        
-        image_labels = np.identity(N) 
-
-        characters = get_images(diff_characters, image_labels, nb_samples=K) # getting (labels, image_paths)
-        
         support_images, support_labels = [], []
         query_images, query_labels = [], []
 
-        labels = []
-        images = []
-        
         for i, (label, image_paths) in enumerate(characters):
-            if i % K == 0:
-                # print(i, "  ehre")
-                query_labels.append(label)
+            if i % (K) == 0:
                 query_images.append(self.image_file_to_array(image_paths, self.dim_input))
+                query_labels.append(label)
             else:
-                support_labels.append(label)
                 support_images.append(self.image_file_to_array(image_paths, self.dim_input))
+                support_labels.append(label)
         
+        # this is useless but i cant be bothered
+        support_images = np.array(support_images)
+        support_labels = np.array(support_labels)
+        query_images = np.array(query_images)
+        query_labels = np.array(query_labels)
 
-        # support_set = shuffle_fn(np.concatenate((np.array(support_images), np.array(support_labels)), axis=1))
-        # query_set = shuffle_fn(np.concatenate((np.array(query_images), np.array(query_labels)), axis=1))
+        # Shuffle the support and query sets while maintaining the correspondence between images and labels
+        if shuffle_fn:
+            support_indices = np.arange(len(support_images))
+            query_indices = np.arange(len(query_images))
+            shuffle_fn(support_indices)
+            shuffle_fn(query_indices)
+            support_images = support_images[support_indices]
+            support_labels = support_labels[support_indices]
+            query_images = query_images[query_indices]
+            query_labels = query_labels[query_indices]
 
-        # print(support_set)
-        # support_images = np.reshape(support_set, (N, -1))
-        # support_labels = np.reshape(support_set, (N, N))
-        # query_images = np.reshape(query_set, (N, self.dim_input))
-        # query_labels = np.reshape(query_set, (N, N))
-        
-        labels = np.vstack(support_labels + query_labels).reshape((-1, N, N))
-        images = np.vstack(support_images + query_images).reshape((K, N, -1)) 
+        # Concatenate support and query sets along the first axis
+        images = np.concatenate((support_images, query_images), axis=0)
+        labels = np.concatenate((support_labels, query_labels), axis=0)
 
-        # print("label's shape: ", labels.shape)
-        # print("image's shape: ", images.shape)
-        
+        # Reshape the images and labels to the desired shapes
+        labels = labels.reshape((-1, N, N))  # (K+1) x N x N
+        images = images.reshape((K, N, -1))  # (K+1) x N x 784
+
         return images, labels
-        ### END CODE HERE ###
+
 
     def __iter__(self):
         while True:
