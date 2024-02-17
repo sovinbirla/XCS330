@@ -146,56 +146,29 @@ class DataGenerator(IterableDataset):
         if shuffle_fn is None:
             shuffle_fn = self.shuffle_fn
 
-        # Get the number of classes (N) and the number of samples per class (K)
-        N = self.num_classes
-        K = self.num_samples_per_class
-
-        # Sample N different classes
+        N, K = self.num_classes, self.num_samples_per_class
         diff_characters = sample_fn(self.folders, N)
-
-        # Create one-hot encoded labels for the sampled classes
         image_labels = np.eye(N) 
 
-        # Get K+1 samples for each sampled class
         characters = get_images(diff_characters, image_labels, nb_samples=K)
-
         support_images, support_labels = [], []
         query_images, query_labels = [], []
 
         for i, (label, image_paths) in enumerate(characters):
-            if i % (K) == 0:
-                query_images.append(self.image_file_to_array(image_paths, self.dim_input))
-                query_labels.append(label)
-            else:
-                support_images.append(self.image_file_to_array(image_paths, self.dim_input))
-                support_labels.append(label)
-        
-        # this is useless but i cant be bothered
-        support_images = np.array(support_images)
-        support_labels = np.array(support_labels)
-        query_images = np.array(query_images)
-        query_labels = np.array(query_labels)
+            (query_images if i % (K) == 0 else support_images).append(
+                self.image_file_to_array(image_paths, self.dim_input))
+            (query_labels if i % (K) == 0 else support_labels).append(label)
 
-        # Shuffle the support and query sets while maintaining the correspondence between images and labels
-        if shuffle_fn:
-            support_indices = np.arange(len(support_images))
-            query_indices = np.arange(len(query_images))
-            shuffle_fn(support_indices)
-            shuffle_fn(query_indices)
-            support_images = support_images[support_indices]
-            support_labels = support_labels[support_indices]
-            query_images = query_images[query_indices]
-            query_labels = query_labels[query_indices]
+        support_images, support_labels = np.array(support_images), np.array(support_labels)
+        query_images, query_labels = np.array(query_images), np.array(query_labels)
 
-        # Concatenate support and query sets along the first axis
-        images = np.concatenate((support_images, query_images), axis=0)
-        labels = np.concatenate((support_labels, query_labels), axis=0)
+        support_indices, query_indices = np.arange(len(support_images)), np.arange(len(query_images))
+        shuffle_fn(support_indices), shuffle_fn(query_indices)
 
-        # Reshape the images and labels to the desired shapes
-        labels = labels.reshape((-1, N, N))  # (K+1) x N x N
-        images = images.reshape((K, N, -1))  # (K+1) x N x 784
+        images = np.concatenate((support_images[support_indices], query_images[query_indices]), axis=0)
+        labels = np.concatenate((support_labels[support_indices], query_labels[query_indices]), axis=0)
 
-        return images, labels
+        return images.reshape((K, N, -1)), labels.reshape((-1, N, N))
 
 
     def __iter__(self):
