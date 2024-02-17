@@ -139,10 +139,8 @@ class DataGenerator(IterableDataset):
             4. PyTorch uses float32 as the default for representing model parameters. 
             You would need to return numpy arrays with the same datatype
         """
-
         if sample_fn is None:
             sample_fn = self.sample_fn
-
         if shuffle_fn is None:
             shuffle_fn = self.shuffle_fn
 
@@ -155,21 +153,29 @@ class DataGenerator(IterableDataset):
         query_images, query_labels = [], []
 
         for i, (label, image_paths) in enumerate(characters):
-            (query_images if i % (K) == 0 else support_images).append(
-                self.image_file_to_array(image_paths, self.dim_input))
-            (query_labels if i % (K) == 0 else support_labels).append(label)
+            if i % (K) == 0:
+                query_images.append(
+                    self.image_file_to_array(image_paths, self.dim_input))
+                query_labels.append(label)
+            else:
+                support_images.append(
+                    self.image_file_to_array(image_paths, self.dim_input))
+                support_labels.append(label)
 
         support_images, support_labels = np.array(support_images), np.array(support_labels)
         query_images, query_labels = np.array(query_images), np.array(query_labels)
 
-        support_indices, query_indices = np.arange(len(support_images)), np.arange(len(query_images))
-        shuffle_fn(support_indices), shuffle_fn(query_indices)
+        # Shuffle the query set along the class dimension (dim 1)
+        query_indices = np.arange(len(query_images))
+        shuffle_fn(query_indices)
+        query_images = query_images[query_indices]
+        query_labels = query_labels[query_indices]
 
-        images = np.concatenate((support_images[support_indices], query_images[query_indices]), axis=0)
-        labels = np.concatenate((support_labels[support_indices], query_labels[query_indices]), axis=0)
+        images = np.concatenate((support_images, query_images), axis=0)
+        labels = np.concatenate((support_labels, query_labels), axis=0)
 
         return images.reshape((K, N, -1)), labels.reshape((-1, N, N))
-
+    
 
     def __iter__(self):
         while True:
