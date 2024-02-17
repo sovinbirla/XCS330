@@ -16,6 +16,7 @@ def get_images(paths, labels, nb_samples=None):
         labels: List or numpy array of same length as paths
         nb_samples: Number of images to retrieve per character
     Returns:
+        image_path = characters
         List of (label, image_path) tuples
     """
     if nb_samples is not None:
@@ -54,8 +55,8 @@ class DataGenerator(IterableDataset):
                     img_size - size of the input images
             cache: whether to cache the images loaded
         """
-        self.num_samples_per_class = num_samples_per_class
-        self.num_classes = num_classes
+        self.num_samples_per_class = num_samples_per_class # K+1
+        self.num_classes = num_classes # N
 
         data_folder = config.get("data_folder", "./omniglot_resized")
         self.img_size = config.get("img_size", (28, 28))
@@ -133,7 +134,7 @@ class DataGenerator(IterableDataset):
             
             3. The value for `self.num_samples_per_class` will be set to K+1 
             since for K-shot classification you need to sample K supports and 
-            1 query.
+            1 query. // Intersting
 
             4. PyTorch uses float32 as default for representing model parameters. 
             You would need to return numpy arrays with the same datatype
@@ -145,9 +146,50 @@ class DataGenerator(IterableDataset):
         if shuffle_fn is None:
             shuffle_fn = self.shuffle_fn
 
-        #############################
-        ### START CODE HERE ###
-        ### END CODE HERE ###
+        # #############################
+        # ### START CODE HERE ###
+        
+        # #all characters
+
+        N = self.num_classes
+        K = self.num_samples_per_class
+
+        images = []
+
+        print("self.folders, ", len(self.folders)) #all characters
+        print("N:", N)
+        print("K:", K)
+
+        diff_characters = sample_fn(self.folders, N) # diff character sampling through folders
+
+        print("diff_characters: ", diff_characters) # N classes of characters
+
+
+        image_labels = torch.arange(N)
+        # for char in diff_characters:
+
+        characters = get_images(diff_characters, image_labels) # getting (labels, image_paths)
+        
+        print("characters: ", characters)
+
+        labels = []
+
+        # for i in range(K):
+        #     labels.append(characters[i][0])
+        #     images.append(self.image_file_to_array(characters[i][1], self.dim_input))
+
+        # labels = torch.tensor(labels)
+        # images = torch.tensor(images)
+
+        # print("images shape", images.shape)
+        # print("labels shape: ", labels.shape)
+
+
+
+
+        return images, labels
+        # ### END CODE HERE ###
+        
 
     def __iter__(self):
         while True:

@@ -39,6 +39,7 @@ def main(config):
     else:
         device = torch.device("cpu")
 
+
     print("Using device: ", device)
 
 
@@ -161,7 +162,7 @@ if __name__ == "__main__":
     parser.add_argument("--learning_rate", type=float, default=1e-3)
     parser.add_argument("--train_steps", type=int, default=25000)
     parser.add_argument("--image_caching", type=bool, default=True)
-    parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--device", type=str, default="gpu")
     parser.add_argument('--compile', action=argparse.BooleanOptionalAction)
     parser.add_argument("--backend", type=str, default="inductor", choices=['inductor', 'aot_eager', 'cudagraphs'])
     parser.add_argument('--debug', action=argparse.BooleanOptionalAction)
