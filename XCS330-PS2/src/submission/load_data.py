@@ -163,33 +163,32 @@ class DataGenerator(IterableDataset):
         diff_characters = sample_fn(self.folders, N) # diff character sampling through folders
 
         print("diff_characters: ", diff_characters) # N classes of characters
-
-
-        image_labels = torch.arange(N)
-        # for char in diff_characters:
-
-        characters = get_images(diff_characters, image_labels) # getting (labels, image_paths)
         
-        print("characters: ", characters)
+        image_labels = np.identity(N) 
 
-        labels = []
+        characters = get_images(diff_characters, image_labels, nb_samples=K) # getting (labels, image_paths)
+        
+        support_images, support_labels = [], []
+        query_images, query_labels = [], []
+        for i, (label, image_paths) in enumerate(characters):
+                if i % K != 0:
+                    support_labels.append(label)
+                    support_images.append(self.image_file_to_array(image_paths, self.dim_input))
+                else:
+                    query_labels.append(label)
+                    query_images.append(self.image_file_to_array(image_paths, self.dim_input))
 
-        # for i in range(K):
-        #     labels.append(characters[i][0])
-        #     images.append(self.image_file_to_array(characters[i][1], self.dim_input))
+        support_images, support_labels = shuffle_fn(support_images, support_labels)
+        query_images, query_labels = shuffle_fn(query_images, query_labels)
 
-        # labels = torch.tensor(labels)
-        # images = torch.tensor(images)
+        labels = np.vstack(support_labels + query_labels).reshape((-1, self.num_classes, self.num_classes))  # K, N, N
+        images = np.vstack(support_images + query_images).reshape((self.num_samples_per_class, self.num_classes, -1))  # K x N x 784
 
-        # print("images shape", images.shape)
-        # print("labels shape: ", labels.shape)
-
-
-
-
+        # print("label's shape: ", labels.shape)
+        # print("image's shape: ", images.shape)
+        
         return images, labels
-        # ### END CODE HERE ###
-        
+        ### END CODE HERE ###
 
     def __iter__(self):
         while True:
