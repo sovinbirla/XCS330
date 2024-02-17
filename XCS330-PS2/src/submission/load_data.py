@@ -156,13 +156,13 @@ class DataGenerator(IterableDataset):
 
         images = []
 
-        print("self.folders, ", len(self.folders)) #all characters
-        print("N:", N)
-        print("K:", K)
+        # print("self.folders, ", len(self.folders)) #all characters
+        # print("N:", N)
+        # print("K:", K)
 
         diff_characters = sample_fn(self.folders, N) # diff character sampling through folders
 
-        print("diff_characters: ", diff_characters) # N classes of characters
+        # print("diff_characters: ", diff_characters) # N classes of characters
         
         image_labels = np.identity(N) 
 
@@ -170,19 +170,31 @@ class DataGenerator(IterableDataset):
         
         support_images, support_labels = [], []
         query_images, query_labels = [], []
+
+        labels = []
+        images = []
+        
         for i, (label, image_paths) in enumerate(characters):
-                if i % K != 0:
-                    support_labels.append(label)
-                    support_images.append(self.image_file_to_array(image_paths, self.dim_input))
-                else:
-                    query_labels.append(label)
-                    query_images.append(self.image_file_to_array(image_paths, self.dim_input))
+            if i % K == 0:
+                # print(i, "  ehre")
+                query_labels.append(label)
+                query_images.append(self.image_file_to_array(image_paths, self.dim_input))
+            else:
+                support_labels.append(label)
+                support_images.append(self.image_file_to_array(image_paths, self.dim_input))
+        
 
-        support_images, support_labels = shuffle_fn(support_images, support_labels)
-        query_images, query_labels = shuffle_fn(query_images, query_labels)
+        # support_set = shuffle_fn(np.concatenate((np.array(support_images), np.array(support_labels)), axis=1))
+        # query_set = shuffle_fn(np.concatenate((np.array(query_images), np.array(query_labels)), axis=1))
 
-        labels = np.vstack(support_labels + query_labels).reshape((-1, self.num_classes, self.num_classes))  # K, N, N
-        images = np.vstack(support_images + query_images).reshape((self.num_samples_per_class, self.num_classes, -1))  # K x N x 784
+        # print(support_set)
+        # support_images = np.reshape(support_set, (N, -1))
+        # support_labels = np.reshape(support_set, (N, N))
+        # query_images = np.reshape(query_set, (N, self.dim_input))
+        # query_labels = np.reshape(query_set, (N, N))
+        
+        labels = np.vstack(support_labels + query_labels).reshape((-1, N, N))
+        images = np.vstack(support_images + query_images).reshape((K, N, -1)) 
 
         # print("label's shape: ", labels.shape)
         # print("image's shape: ", images.shape)
