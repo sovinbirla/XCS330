@@ -146,6 +146,7 @@ class DataGenerator(IterableDataset):
 
         N, K = self.num_classes, self.num_samples_per_class
         diff_characters = sample_fn(self.folders, N)
+        # print("diff_characters: ", diff_characters)
         image_labels = np.eye(N) 
 
         characters = get_images(diff_characters, image_labels, nb_samples=K)
@@ -153,13 +154,11 @@ class DataGenerator(IterableDataset):
         query_images, query_labels = [], []
 
         for i, (label, image_paths) in enumerate(characters):
-            if i % (K) == 0:
-                query_images.append(
-                    self.image_file_to_array(image_paths, self.dim_input))
+            if i % K == 0:
+                query_images.append(self.image_file_to_array(image_paths, self.dim_input))
                 query_labels.append(label)
             else:
-                support_images.append(
-                    self.image_file_to_array(image_paths, self.dim_input))
+                support_images.append(self.image_file_to_array(image_paths, self.dim_input))
                 support_labels.append(label)
 
         support_images, support_labels = np.array(support_images), np.array(support_labels)
