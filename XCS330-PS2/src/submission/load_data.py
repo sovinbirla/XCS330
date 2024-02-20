@@ -147,7 +147,7 @@ class DataGenerator(IterableDataset):
         N, K = self.num_classes, self.num_samples_per_class
         diff_characters = sample_fn(self.folders, N)
         # print("diff_characters: ", diff_characters)
-        image_labels = np.eye(N) 
+        image_labels = np.eye(N, dtype=np.float32) 
 
         characters = get_images(diff_characters, image_labels, nb_samples=K)
         support_images, support_labels = [], []

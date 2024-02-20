@@ -66,21 +66,21 @@ class MANN(nn.Module):
         loss = None
 
         ### START CODE HERE ###
-
-
+        
         # print("preds.shape: ", preds.shape)
         # print("labels.shape: ", labels.shape)
 
         
         # Extract the predictions for the test images
-        test_preds = preds[:, -1]  # Shape: [B, N, N]
+        test_preds = preds[:, -1, :, :]  # Shape: [B, N, N]
         # Extract the labels for the test images
-        test_labels = labels[:, -1]  # Shape: [B, N, N]
+        test_labels = labels[:, -1, :, :]  # Shape: [B, N, N]
+
+        test_preds = test_preds.swapaxes(1,2)
+        test_labels = test_labels.swapaxes(1,2)
 
         # Compute cross-entropy loss
         loss = F.cross_entropy(test_preds, test_labels)
-
-
-        return loss
         ### END CODE HERE ###
 
+        return loss
