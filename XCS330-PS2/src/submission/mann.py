@@ -17,8 +17,8 @@ def initialize_weights(model):
 class MANN(nn.Module):
     def __init__(self, num_classes, samples_per_class, hidden_dim):
         super(MANN, self).__init__()
-        self.num_classes = num_classes
-        self.samples_per_class = samples_per_class
+        self.num_classes = num_classes # N
+        self.samples_per_class = samples_per_class # K
 
         self.layer1 = torch.nn.LSTM(num_classes + 784, hidden_dim, batch_first=True)
         self.layer2 = torch.nn.LSTM(hidden_dim, num_classes, batch_first=True)
@@ -29,13 +29,25 @@ class MANN(nn.Module):
         """
         MANN
         Args:
-            input_images: [B, K+1, N, 784] flattened images
-            labels: [B, K+1, N, N] ground truth labels
+            input_images: [B, K+1, N, 784] flattened images (N, 784) #characters, actual image data 
+            labels: [B, K+1, N, N] ground truth labels (N,N) #characters, 1-hot-encoded label, 1 for each N character
         Returns:
-            [B, K+1, N, N] predictions
-        """
+            [B, K+1, N, N] predictions # prediction for each character
+        """ 
         #############################
         ### START CODE HERE ###
+        B, K, N, _ = input_images.size()
+
+        x = torch.cat((input_images, input_labels), dim=3)
+        x[:, -1, :, 784:] = 0
+        x = x.reshape(x.shape[0], -1, x.shape[3])
+        x = x.to(torch.float32)
+        x, _ = self.layer1(x)
+        x, _ = self.layer2(x)
+
+        x = x.reshape(x.shape[0], K, N , -1)
+
+        return x
         ### END CODE HERE ###
 
     def loss_function(self, preds, labels):
@@ -54,6 +66,22 @@ class MANN(nn.Module):
         loss = None
 
         ### START CODE HERE ###
-        ### END CODE HERE ###
+
+
+        # print("preds.shape: ", preds.shape)
+        # print("labels.shape: ", labels.shape)
+
+        
+        # Extract the predictions for the test images
+        test_preds = preds[:, -1]  # Shape: [B, N, N]
+        # Extract the labels for the test images
+        test_labels = labels[:, -1]  # Shape: [B, N, N]
+
+        # Compute cross-entropy loss
+        criterion = nn.CrossEntropyLoss()
+        loss = criterion(test_preds, test_labels)
+
 
         return loss
+        ### END CODE HERE ###
+

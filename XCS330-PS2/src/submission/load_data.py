@@ -161,8 +161,14 @@ class DataGenerator(IterableDataset):
                 support_images.append(self.image_file_to_array(image_paths, self.dim_input))
                 support_labels.append(label)
 
+        # this following 2 lines... I cant be bothered
         support_images, support_labels = np.array(support_images), np.array(support_labels)
         query_images, query_labels = np.array(query_images), np.array(query_labels)
+
+        # print("support_images:", support_images.shape) #(4, 784)=(N*K, image_size)
+        # print("support_labels:", support_labels.shape) #(4, 2)=(N*K, N)
+        # print("query_images:", query_images.shape) #(2, 784)=(K, image_size)
+        # print("query_labels:", query_labels.shape) #(2, 2)=(K, N)
 
         # Shuffle the query set along the class dimension (dim 1)
         query_indices = np.arange(len(query_images))
@@ -170,12 +176,12 @@ class DataGenerator(IterableDataset):
         query_images = query_images[query_indices]
         query_labels = query_labels[query_indices]
 
-        images = np.concatenate((support_images, query_images), axis=0)
-        labels = np.concatenate((support_labels, query_labels), axis=0)
+        images = np.concatenate((support_images, query_images), axis=0) #(K+N, image_size)
+        labels = np.concatenate((support_labels, query_labels), axis=0) #(K+N, N)
 
-        return images.reshape((K, N, -1)), labels.reshape((-1, N, N))
+        # print(labels.reshape((K, N, N)).shape)
+        return images.reshape((K, N, -1)), labels.reshape((K, N, N))
     
-
     def __iter__(self):
         while True:
             yield self._sample()

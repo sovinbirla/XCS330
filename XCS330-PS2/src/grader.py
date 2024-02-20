@@ -221,6 +221,7 @@ class Test_2(GradedTestCase):
         # Do a forward pass and compute the loss
         pred, tls = train_step(images, labels, model, None, eval=True)
 
+        # print(pred.shape)
         # Check that the dimension match for the predictions
         self.assertTrue(pred.shape[0] == self.B and pred.shape[1] == self.K+1 and pred.shape[2] == self.N and pred.shape[3] == self.N, "Issue in MANN.forward function! Please follow all requirements outlined in the function comments and the writeup.")
 
