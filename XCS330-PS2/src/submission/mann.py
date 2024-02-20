@@ -78,8 +78,7 @@ class MANN(nn.Module):
         test_labels = labels[:, -1]  # Shape: [B, N, N]
 
         # Compute cross-entropy loss
-        criterion = nn.CrossEntropyLoss()
-        loss = criterion(test_preds, test_labels)
+        loss = F.cross_entropy(test_preds, test_labels)
 
 
         return loss

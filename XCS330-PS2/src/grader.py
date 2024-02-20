@@ -270,6 +270,8 @@ class Test_2(GradedTestCase):
         # Compute the loss on the student model using predictions from the solution model
         student_tls = student_model.loss_function(sol_pred, labels)
 
+        # print(student_tls, sol_tls)
+        # print(torch.allclose(student_tls, sol_tls, atol=1e-5))
         # Check that the losses are identical
         self.assertTrue(torch.allclose(student_tls, sol_tls, atol=1e-5), "Issue in MANN.loss_function function! Please follow all requirements outlined in the function comments and the writeup.")
 
