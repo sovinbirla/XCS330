@@ -120,8 +120,8 @@ class Test_1(GradedTestCase):
             target_labels = np.append(target_labels, np.eye(N=1, M=self.N, k=i).reshape(-1))
         target_labels = np.tile(target_labels, self.B).reshape(self.B, self.N, self.N)
 
-        print("labels: ", labels[:, 0].numpy())
-        print("target_labels: ", target_labels)
+        # print("labels: ", labels[:, 0].numpy())
+        # print("target_labels: ", target_labels)
         # Check that the order of the sequence set is fixed
         self.assertTrue(np.array_equal(labels[:, 0].numpy(), target_labels), "Issue in DataGenerator._sample function! Please follow all requirements outlined in the function comments and the writeup.")
 

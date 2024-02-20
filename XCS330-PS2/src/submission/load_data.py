@@ -154,7 +154,8 @@ class DataGenerator(IterableDataset):
         query_images, query_labels = [], []
 
         for i, (label, image_paths) in enumerate(characters):
-            if i % K == 0:
+            if (i+1) / K == 1:
+
                 query_images.append(self.image_file_to_array(image_paths, self.dim_input))
                 query_labels.append(label)
             else:
@@ -179,7 +180,6 @@ class DataGenerator(IterableDataset):
         images = np.concatenate((support_images, query_images), axis=0) #(K+N, image_size)
         labels = np.concatenate((support_labels, query_labels), axis=0) #(K+N, N)
 
-        # print(labels.reshape((K, N, N)).shape)
         return images.reshape((K, N, -1)), labels.reshape((K, N, N))
     
     def __iter__(self):
