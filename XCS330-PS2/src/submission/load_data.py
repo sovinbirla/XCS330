@@ -153,9 +153,12 @@ class DataGenerator(IterableDataset):
         support_images, support_labels = [], []
         query_images, query_labels = [], []
 
-        for i, (label, image_paths) in enumerate(characters):
-            if (i+1) / K == 1:
+        # print("K:" , K) 
+        # print(characters)
 
+        for i, (label, image_paths) in enumerate(characters):
+            if (i+1) % K == 0 and i!=0:
+                # print(i, " here")
                 query_images.append(self.image_file_to_array(image_paths, self.dim_input))
                 query_labels.append(label)
             else:
@@ -172,6 +175,7 @@ class DataGenerator(IterableDataset):
         # print("query_labels:", query_labels.shape) #(2, 2)=(K, N)
 
         # Shuffle the query set along the class dimension (dim 1)
+
         query_indices = np.arange(len(query_images))
         shuffle_fn(query_indices)
         query_images = query_images[query_indices]
@@ -180,7 +184,12 @@ class DataGenerator(IterableDataset):
         images = np.concatenate((support_images, query_images), axis=0) #(K+N, image_size)
         labels = np.concatenate((support_labels, query_labels), axis=0) #(K+N, N)
 
-        return images.reshape((K, N, -1)), labels.reshape((K, N, N))
+        images, labels = images.reshape((K, N, -1)), labels.reshape((K, N, N))
+
+        # print("images.shape: ", images.shape)
+        # print("labels.shape: ", labels.shape)
+
+        return images, labels
     
     def __iter__(self):
         while True:

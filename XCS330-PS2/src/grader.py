@@ -363,7 +363,7 @@ class Test_3(GradedTestCase):
         predictions = np.argmax(predictions[:, -1, :, :], axis=2)
         labels = np.argmax(labels[:, -1, :, :], axis=2)
         acc = np.equal(predictions, labels).sum().item() / (self.B * 2)
-        
+
         ### BEGIN_HIDE ###
         ### END_HIDE ###
 
