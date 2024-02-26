@@ -12,10 +12,11 @@ ARG_BATCHSIZE=--meta_batch_size=${4:-'128'}
 python main.py --num_shot 1 --num_classes 2 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
 
 # Experiment 2
-python main.py --num_shot 2 --num_classes 2 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
+# python main.py --num_shot 1 --num_classes 3 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
 
 # Experiment 3
-python main.py --num_shot 1 --num_classes 3 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
+# python main.py --num_shot 1 --num_classes 3 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
 
 # Experiment 4
-python main.py --num_shot 1 --num_classes 4 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
+# python main.py --num_shot 1 --num_classes 4 $ARG_DEVICE $ARG_COMPILE $ARG_BACKEND $ARG_BATCHSIZE
+

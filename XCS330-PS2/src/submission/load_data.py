@@ -157,7 +157,7 @@ class DataGenerator(IterableDataset):
         # print(characters)
 
         for i, (label, image_paths) in enumerate(characters):
-            if (i+1) % K == 0 and i!=0:
+            if (i+1) % K == 0 and i!=0: #i+1 % k to make sure that the last K is inside the query set
                 # print(i, " here")
                 query_images.append(self.image_file_to_array(image_paths, self.dim_input))
                 query_labels.append(label)

@@ -46,7 +46,7 @@ def main(config):
     torch.manual_seed(config.random_seed)
 
     writer = SummaryWriter(
-        f"runs/{config.num_classes}_{config.num_shot}_{config.random_seed}_{config.hidden_dim}"
+        f"runs/{config.num_classes}_{config.num_shot}_{config.hidden_dim}"
     )
 
     # Download Omniglot Dataset
@@ -133,7 +133,7 @@ def main(config):
                 pred, [-1, config.num_shot + 1, config.num_classes, config.num_classes]
             )
 
-            with open(f'submission/mann_results_{config.num_shot}_{config.num_classes}.npy', 'wb') as f:
+            with open(f'submission/mann_results_{config.num_shot}_{config.num_classes}_{config.hidden_dim}.npy', 'wb') as f:
                 np.save(f, l.cpu().numpy())
                 np.save(f, pred.cpu().numpy())
 
