@@ -1,0 +1,14 @@
+\item \points{1d} {\bf 5-way 1-shot Comparison}
+We will now compare different settings at training time. Train on 5-way 1-shot tasks with 15 query examples per task. 
+\begin{enumerate}[label=(\roman*)]
+    \item Compare your two runs (5-way 1-shot training and 5-way 5-shot training) by assessing test performance on 5-way 1-shot tasks. To assess a trained model on test tasks, run
+    \begin{equation*}
+        \texttt{python protonet.py --test}
+    \end{equation*}
+
+    appropriately specifying \texttt{log\_dir} and \texttt{checkpoint\_step}. Submit a table of your results with 95\% confidence intervals.
+        
+    \item How did you choose which checkpoint to use for testing for each model? 
+        
+    \item Is there a significant difference in the test performance on 5-way 1-shot tasks? Explain this by referring to the protonets algorithm.
+\end{enumerate}

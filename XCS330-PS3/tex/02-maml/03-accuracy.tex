@@ -1,0 +1,10 @@
+\item \points{2c} {\bf Accuracy Metrics}
+
+6 accuracy metrics are logged. Examine these in detail to reason about what MAML is doing.
+\begin{enumerate}[label=(\roman*)]
+    \item State and explain the behavior of the \texttt{train\_pre\_adapt\_support} and \texttt{val\_pre\_adapt\_support} accuracies. Your answer should explicitly refer to the task sampling process. \\ \textbf{Hint}: consult the \texttt{omniglot.py} file.
+
+    \item Compare the \texttt{train\_pre\_adapt\_support} and \texttt{train\_post\_adapt\_support} accuracies. What does this comparison tell you about the model? Repeat for the corresponding \texttt{val} accuracies.
+    
+    \item Compare the \texttt{train\_post\_adapt\_support} and \texttt{train\_post\_adapt\_query} accuracies. What does this comparison tell you about the model? Repeat for the corresponding \texttt{val} accuracies.
+\end{enumerate}

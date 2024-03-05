@@ -1,0 +1,53 @@
+\section{Model-Agnostic Meta-Learning (MAML)~\cite{maml}}
+
+\textbf{A Note: }
+You may wonder why the performance of these implementations don't match the numbers reported in the original papers. One major reason is that the original papers used a different version of Omniglot few-shot classification, in which multiples of $90^{\circ}$ rotations are applied to each image to obtain 4 times the total number of images and characters. Another reason is that these implementations are designed to be pedagogical and therefore straightforward to implement from equations and pseudocode as well as trainable with minimal hyperparameter tuning. Finally, with our use of batch statistics for batch normalization during test (see code), we are technically operating in the \emph{transductive} few-shot learning setting.
+
+\subsubsection*{MAML Algorithm Overview}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{./figures/MAML}
+\vspace{-3mm}
+\caption{MAML in a nutshell. MAML tries to find an initial parameter vector $\theta$ that can be quickly adapted via task gradients to task-specific optimal parameter vectors.}
+\label{fig:maml}
+\end{figure}
+
+As discussed in lecture, the basic idea of MAML is to meta-learn parameters $\theta$ that can be quickly adapted via gradient descent to a given task. To keep notation clean, define the loss $\mathcal{L}$ of a model with parameters $\phi$ on the data $\dataset_i$ of a task $\task_i$ as
+\begin{equation}\label{eq:maml loss}
+    \mathcal{L}(\phi, \dataset_i) = \frac{1}{\lvert \dataset_i \rvert} \sum_{(x^j, y^j) \in \dataset_i} -\log p_\phi (y = y^j \mid x^j)
+\end{equation}
+Adaptation is often called the \emph{inner loop}. For a task $\task_i$ and $L$ inner loop steps, adaptation looks like the following:
+\begin{equation}
+\begin{aligned}
+    \phi^1 &= \phi^0 - \alpha \nabla_{\phi^0} \mathcal{L}(\phi^0, \supportdata_i) \\
+    \phi^2 &= \phi^1 - \alpha \nabla_{\phi^1} \mathcal{L}(\phi^1, \supportdata_i) \\
+    \vdots \\
+    \phi^L &= \phi^{L-1} - \alpha \nabla_{\phi^{L-1}} \mathcal{L}(\phi^{L-1}, \supportdata_i)
+\end{aligned}
+\end{equation}
+where we have defined $\theta = \phi^0$.
+
+
+Notice that only the support data is used to adapt the parameters to $\phi^L$. (In lecture, you saw $\phi^L$ denoted as $\phi_i$.) To optimize $\theta$ in the \emph{outer loop}, we use the same loss function~\eqref{eq:maml loss} applied on the adapted parameters and the query data:
+\begin{equation}
+    \mathcal{J}(\theta) = \E_{\task_i \sim p(\task), (\supportdata_i, \querydata_i) \sim \task_i} \left[ \mathcal{L}(\phi^L, \querydata_i) \right] \label{eq:maml_objective}
+\end{equation}
+
+
+For this homework, we will further consider a variant of MAML~\cite{mamlplusplus} that proposes to additionally learn the inner loop learning rates $\alpha$. Instead of a single scalar inner learning rate for all parameters, there is a separate scalar inner learning rate for each parameter group (e.g. convolutional kernel, weight matrix, or bias vector). Adaptation remains the same as in vanilla MAML except with appropriately broadcasted multiplication between the inner loop learning rates and the gradients with respect to each parameter group. 
+
+The full MAML objective is
+\begin{equation}
+    \mathcal{J}(\theta, \alpha) = \E_{\task_i \sim p(\task), (\supportdata_i, \querydata_i) \sim \task_i} \left[ \mathcal{L}(\phi^L, \querydata_i) \right] \label{eq:full_objective}
+\end{equation}
+Like before, we will use minibatches to approximate \eqref{eq:full_objective} and use the Adam optimizer.
+
+\begin{enumerate}[label={2.\alph*}]
+    \input{02-maml/01-inner-loop}
+    \input{02-maml/02-outer-loop}
+    \input{02-maml/03-accuracy}
+    \input{02-maml/04-experiments}
+\end{enumerate}
+
+    
