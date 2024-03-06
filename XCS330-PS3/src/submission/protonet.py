@@ -95,7 +95,6 @@ class ProtoNet:
         """
         self.device = device
         self._network = ProtoNetNetwork(device)
-        self.distanceFunc = lambda x,cn: -((cn - x)**2).sum(dim=-1)
 
 
         if(compile == True):
@@ -140,40 +139,34 @@ class ProtoNet:
             ### START CODE HERE ###
             support_out = self._network(images_support)
             query_out = self._network(images_query)
-            class_nums = len(torch.unique(labels_support))
-            support_shot_nums = int(len(labels_support) / class_nums)
-            
-            # Calculate class prototypes
-            cn = support_out.reshape((class_nums, support_shot_nums, -1)).mean(dim=1)
 
-            # Calculate distances (without vmap)
-            query_dist = []
-            for query_embedding in query_out:
-                distances_to_prototypes = [ 
-                    self.distanceFunc(query_embedding, prototype) for prototype in cn
-                ]
-                query_dist.append(distances_to_prototypes)
-            query_dist = torch.tensor(query_dist)
+
+            classes = len(torch.unique(labels_support)) # N
+            shots = int(len(labels_support) / classes) # K
+            
+            # Calculate prototypes
+            prototypes = support_out.reshape((classes, shots, -1)).mean(dim=1)
+
+            # Calculate support distances
+            support_dist = torch.stack([
+                torch.stack([torch.sum((support_embedding - prototype) ** 2, dim=-1) for prototype in prototypes])
+                for support_embedding in support_out
+            ])
+
+            # Calculate query distances
+            query_dist = torch.stack([
+                torch.stack([torch.sum((query_embedding - prototype) ** 2, dim=-1) for prototype in prototypes])
+                for query_embedding in query_out
+            ])
 
             # Calculate loss
             loss = F.cross_entropy(query_dist, labels_query)
             loss_batch.append(loss)
 
-            # Calculate support accuracy (without vmap) 
-            support_dists = []
-            for support_embedding in support_out:
-                distances_to_prototypes = [
-                    self.distanceFunc(support_embedding, prototype) for prototype in cn
-                ]
-                support_dists.append(distances_to_prototypes)
-            support_dists = torch.tensor(support_dists)
-            support_dists_SoftMax = support_dists.softmax(dim=1)
-            accuracy_support = util.score(support_dists_SoftMax, labels_support)
+            accuracy_support = util.score(support_dist.softmax(dim=1), labels_support)
+            accuracy_query = util.score(query_dist.softmax(dim=1),labels_query)
+
             accuracy_support_batch.append(accuracy_support)
-            
-            #* cal query accuracy
-            query_dist_SoftMax = query_dist.softmax(dim=1)
-            accuracy_query = util.score(query_dist_SoftMax,labels_query)
             accuracy_query_batch.append(accuracy_query)
         
         
