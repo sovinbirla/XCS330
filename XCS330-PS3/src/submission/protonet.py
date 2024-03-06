@@ -28,6 +28,12 @@ PRINT_INTERVAL = 10
 VAL_INTERVAL = PRINT_INTERVAL * 5
 NUM_TEST_TASKS = 600
 
+# max = 4457975
+# jackie 1 = 3708976
+# all blue 1 = 3647956
+# (max)jackie 2 = 1719358
+
+
 class ProtoNetNetwork(nn.Module):
     """Container for ProtoNet weights and image-to-latent computation."""
 

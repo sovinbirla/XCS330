@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARG_DEVICE=--device=${1:-'cpu'}
+ARG_DEVICE=--device=${1:-'gpu'}
 ARG_BATCH_SIZE=--batch_size=${2:-16}
 ARG_COMPILE=--${3:-'no-compile'}
 ARG_BACKEND=--backend=${4:-'inductor'}
