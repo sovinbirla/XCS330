@@ -3,10 +3,10 @@ import sys
 sys.path.append('..')
 import argparse
 import os
-
+from functorch import vmap
 import numpy as np
 import torch
-
+from torchmetrics import Accuracy
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -27,11 +27,6 @@ SAVE_INTERVAL = 100
 PRINT_INTERVAL = 10
 VAL_INTERVAL = PRINT_INTERVAL * 5
 NUM_TEST_TASKS = 600
-
-# max = 4457975
-# jackie 1 = 3708976
-# all blue 1 = 3647956
-# (max)jackie 2 = 1719358
 
 
 class ProtoNetNetwork(nn.Module):
@@ -100,6 +95,8 @@ class ProtoNet:
         """
         self.device = device
         self._network = ProtoNetNetwork(device)
+        self.distanceFunc = lambda x,cn: -((cn - x)**2).sum(dim=-1)
+
 
         if(compile == True):
             try:
@@ -141,12 +138,51 @@ class ProtoNet:
             labels_query = labels_query.to(self.device)
 
             ### START CODE HERE ###
-            ### END CODE HERE ###
+            support_out = self._network(images_support)
+            query_out = self._network(images_query)
+            class_nums = len(torch.unique(labels_support))
+            support_shot_nums = int(len(labels_support) / class_nums)
+            
+            # Calculate class prototypes
+            cn = support_out.reshape((class_nums, support_shot_nums, -1)).mean(dim=1)
+
+            # Calculate distances (without vmap)
+            query_dist = []
+            for query_embedding in query_out:
+                distances_to_prototypes = [ 
+                    self.distanceFunc(query_embedding, prototype) for prototype in cn
+                ]
+                query_dist.append(distances_to_prototypes)
+            query_dist = torch.tensor(query_dist)
+
+            # Calculate loss
+            loss = F.cross_entropy(query_dist, labels_query)
+            loss_batch.append(loss)
+
+            # Calculate support accuracy (without vmap) 
+            support_dists = []
+            for support_embedding in support_out:
+                distances_to_prototypes = [
+                    self.distanceFunc(support_embedding, prototype) for prototype in cn
+                ]
+                support_dists.append(distances_to_prototypes)
+            support_dists = torch.tensor(support_dists)
+            support_dists_SoftMax = support_dists.softmax(dim=1)
+            accuracy_support = util.score(support_dists_SoftMax, labels_support)
+            accuracy_support_batch.append(accuracy_support)
+            
+            #* cal query accuracy
+            query_dist_SoftMax = query_dist.softmax(dim=1)
+            accuracy_query = util.score(query_dist_SoftMax,labels_query)
+            accuracy_query_batch.append(accuracy_query)
+        
+        
         return (
             torch.mean(torch.stack(loss_batch)),
             np.mean(accuracy_support_batch),
             np.mean(accuracy_query_batch)
         )
+
 
     def train(self, dataloader_train, dataloader_val, writer, args):
         """Train the ProtoNet.
@@ -390,7 +426,7 @@ if __name__ == '__main__':
     parser.add_argument('--compile', action=argparse.BooleanOptionalAction)
     parser.add_argument("--backend", type=str, default="inductor", choices=['inductor', 'aot_eager', 'cudagraphs'])
     parser.add_argument('--cache', action='store_true')
-    parser.add_argument('--device', type=str, default='cpu')
+    parser.add_argument('--device', type=str, default='gpu')
 
     args = parser.parse_args()
 

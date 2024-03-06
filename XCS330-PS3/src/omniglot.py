@@ -153,6 +153,7 @@ class OmniglotSampler(sampler.Sampler):
 
 
 def identity(x):
+    #brilliant
     return x
 
 
