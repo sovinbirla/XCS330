@@ -184,17 +184,17 @@ class MAML:
         
         
             ### START CODE HERE ###
-        for _ in range(self._num_inner_steps):
+        for i in range(self._num_inner_steps):
             pred = self._forward(images, parameters)
             loss = F.cross_entropy(pred,labels)
-            accuracies.append(util.score(pred.detach(),labels))
-            params_list = [v for k,v in parameters.items()]
-            grads = torch.autograd.grad(loss, params_list, create_graph=True)
-            for idx,(k,v) in enumerate(parameters.items()):
-                parameters[k] = v - self._inner_lrs[k]*grads[idx]
+            accuracies.append(util.score(pred,labels))
+            grads = torch.autograd.grad(loss, parameters.values(), create_graph=train)
+            for (i,v), grad in zip(parameters.items(),grads):
+                parameters[i] = v - self._inner_lrs[i] * grad
 
-        pred = self._forward(images, parameters)
-        accuracies.append(util.score(pred.detach(),labels))
+        with torch.no_grad():
+            pred = self._forward(images, parameters)
+            accuracies.append(util.score(pred,labels))
             ### END CODE HERE ###      
 
         return parameters, accuracies, grads
@@ -223,9 +223,9 @@ class MAML:
             labels_support = labels_support.to(self.device)
             images_query = images_query.to(self.device)
             labels_query = labels_query.to(self.device)
-            ### START CODE HERE ###
-            ### END CODE HERE ###
-            parameters, accuracy_support_minibatch = self._inner_loop(images_support,labels_support,train)
+
+            # Inner loop for adaptation
+            parameters,accuracy_support_minibatch, _ = self._inner_loop(images_support,labels_support,train)
             preds = self._forward(images_query,parameters)
             loss = F.cross_entropy(preds,labels_query)
             accuracy_query_minibatch = util.score(preds,labels_query)
@@ -234,9 +234,6 @@ class MAML:
             accuracies_support_batch.append(accuracy_support_minibatch)
             accuracy_query_batch.append(accuracy_query_minibatch)
 
-            # ********************************************************
-            # ******************* YOUR CODE HERE *********************
-            # ********************************************************
         outer_loss = torch.mean(torch.stack(outer_loss_batch))
         accuracies_support = np.mean(
             accuracies_support_batch,

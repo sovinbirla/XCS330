@@ -6,7 +6,6 @@ import os
 from functorch import vmap
 import numpy as np
 import torch
-from torchmetrics import Accuracy
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -405,7 +404,7 @@ if __name__ == '__main__':
                         help='number of query examples per class in a task')
     parser.add_argument('--learning_rate', type=float, default=0.001,
                         help='learning rate for the network')
-    parser.add_argument('--batch_size', type=int, default=16,
+    parser.add_argument('--batch_size', type=int, default=8,
                         help='number of tasks per outer-loop update')
     parser.add_argument('--num_train_iterations', type=int, default=5000,
                         help='number of outer-loop updates to train for')

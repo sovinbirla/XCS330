@@ -112,6 +112,8 @@ class Test_1b(GradedTestCase):
         fix_random_seeds()
         submission_loss, submission_accuracy_support, submission_accuracy_query = self.submission_protonet._step(task_batch)
 
+        print(torch.allclose(solution_loss, submission_loss, atol=1e-2))
+        
         self.assertTrue(torch.allclose(solution_loss, submission_loss, atol=1e-2))
         self.assertTrue(np.allclose(solution_accuracy_support, submission_accuracy_support, atol=1e-2))
         self.assertTrue(np.allclose(solution_accuracy_query, submission_accuracy_query, atol=1e-2))
