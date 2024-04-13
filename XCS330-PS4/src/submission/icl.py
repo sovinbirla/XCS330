@@ -214,7 +214,7 @@ def run_icl(
                 n_val = 1
 
             utils.fix_random_seeds()
-            # testing
+            # testing again
             max_tokens = utils.max_sampled_tokens_for_dataset(dataset)
             train, val = utils.get_dataset(dataset, n_train=max(ks), n_val=n_val)
             for prompt_mode in prompt_modes:
