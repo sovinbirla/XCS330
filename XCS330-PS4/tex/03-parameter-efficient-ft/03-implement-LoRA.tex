@@ -1,0 +1,13 @@
+\item \points{3c} {\bf Implement LoRA}
+
+With the information provided in the previous point let us know implement \href{https://arxiv.org/pdf/2106.09685.pdf}{LoRA: Low-rank adaptation}
+\begin{enumerate}[label=(\roman*)]
+    \item Finish the \texttt{LoRAConv1DWrapper} in \texttt{ft.py}, which wraps a pre-trained Conv1D layer with LoRA parameters. Conv1D is equivalent to a Linear layer; it's a 1D conv because we apply the same linear transform at each time step of the sequence. You can extract the shape of the pre-trained weight matrix from the \texttt{base\_module.weight.shape} tuple. You don't need to worry about biases here, just the low-rank weight matrix residual.
+    
+    \item Add the corresponding logic for LoRA in \texttt{ft.py:parameters\_to\_fine\_tune()}. Hint: consider using the \texttt{.modules()} function of \texttt{nn.Module} and checking for modules that are an instance of \texttt{LoRAConv1DWrapper}.
+    \item Implement the 3-dim version of the loss and accuracy in \texttt{ft.py:get\_loss()} and \texttt{ft.py:get\_acc()}.
+    \item Implement batch construction for fine-tuning GPT-2 in function \texttt{ft.py:\allowbreak tokenize\_\allowbreak gpt2\_batch()}. Read the instructions in the code carefully!
+    \item Finally, put it all together by filling out the logic for one step of training in \texttt{ft.py:ft\_gpt2()}. Note that we use \textit{gradient accumulation}, meaning that accumulate gradients over \texttt{grad\_accum} steps, and only update our model's parameters after each \texttt{grad\_accum} steps.
+\end{enumerate}
+
+\clearpage

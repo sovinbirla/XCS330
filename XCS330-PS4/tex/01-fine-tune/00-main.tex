@@ -1,0 +1,10 @@
+\section{Fine-tuning}
+
+As a warmup, we will perform perhaps the most straightforward form of $k$-shot learning with a pre-trained model: directly fine-tuning the entire model on the $k$ examples. We will use two different sizes of smaller BERT models that have been compressed through distillation.\footnote{See \href{https://arxiv.org/pdf/1908.08962.pdf}{here} to learn more about this class of distilled BERT models. For final projects involving language models, these smaller BERT models may be useful for performing compute-friendly experiments!}
+
+\begin{enumerate}[label={1.\alph*}]
+    \input{01-fine-tune/01-implement}
+    \input{01-fine-tune/02-observe-ft}
+    \input{01-fine-tune/03-storage}
+    \input{01-fine-tune/04-disk-space}
+\end{enumerate}

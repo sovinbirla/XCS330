@@ -3,7 +3,6 @@ import sys
 sys.path.append('..')
 import argparse
 import os
-from functorch import vmap
 import numpy as np
 import torch
 import torch.multiprocessing
@@ -174,7 +173,6 @@ class ProtoNet:
             np.mean(accuracy_support_batch),
             np.mean(accuracy_query_batch)
         )
-
 
     def train(self, dataloader_train, dataloader_val, writer, args):
         """Train the ProtoNet.
@@ -404,7 +402,7 @@ if __name__ == '__main__':
                         help='number of query examples per class in a task')
     parser.add_argument('--learning_rate', type=float, default=0.001,
                         help='learning rate for the network')
-    parser.add_argument('--batch_size', type=int, default=8,
+    parser.add_argument('--batch_size', type=int, default=16,
                         help='number of tasks per outer-loop update')
     parser.add_argument('--num_train_iterations', type=int, default=5000,
                         help='number of outer-loop updates to train for')

@@ -1,0 +1,7 @@
+\item \points{4b} {\bf Ordering}
+
+One potential disadvantage of in-context learning is that we must choose an ordering for the examples in our prompt, and \textit{that ordering can sometimes impact performance negatively}. Run the command:
+
+{\small \texttt{python3 main.py --task run\_icl --model med --dataset babi --k 16 --repeats 5}}
+
+to compute the evaluation performance of in-context few-shot performance for 5 random orderings of the prompt. Report the number you get; the standard deviation of performance for fine-tuning is approximately 0.013. Does in-context learning or fine-tuning have a higher standard deviation?

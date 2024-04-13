@@ -1,0 +1,22 @@
+\item \points{2a} {\bf Implement In-Context Learning}
+
+Complete the code for in-context learning in \texttt{icl.py}.
+\begin{enumerate}[label=(\roman*)]
+    \item Implement prompt creation for the XSum and bAbI tasks, which is found in \texttt{icl.py:get\_icl\_prompts()}. You will implement 4 prompt format modes:
+    \begin{enumerate}[label={\arabic*}]
+        \item \texttt{qa} \textbf{[only for bAbI]}: Add ``\texttt{ In the }'' after the question (including the final test question that we want to generate an answer for!) and before each answer, since this task involves answering questions about the physical whereabouts of a person. In addition, add a period after the answer (omitting the period can significantly impact your results!). Be sure to include a space between the question and \texttt{In the}, as well as a space before the answer (though keep in mind Note 1!). Note the  \texttt{Q:} and \texttt{A:} prompts in the example earlier don't apply here. Example: \texttt{Sandra travelled to the kitchen. John went to the office. Where is Sandra? In the kitchen. Sandra went to the office. Daniel went back to the garden. Where is Sandra? In the}
+        \item \texttt{none} \textbf{[only for XSum]}: In this case, we use the raw $k$ examples without any additional formatting; that is, we just concatenate $[x_1; y_1; ... ; \allowbreak x_k; y_k; x^*]$ with a space between each element (but no space at the end), where $x^*$ is the input that we want to generate an answer for. Example: \texttt{Sandra travelled to the kitchen. John went to the office. Where is Sandra? kitchen Sandra went to the office. Daniel went back to the garden. Where is Sandra?}
+        \item \texttt{tldr} \textbf{[only for XSum]}: Add the text ``\texttt{ TL;DR: }'' after each article/input (including the final test article) and before the summary/target. In addition, add a period after the answer. Be sure to include a space between the question and \texttt{TL;DR:}, as well as a space before the answer (though keep in mind Note 1!). Example: \texttt{Sandra travelled to the kitchen. John went to the office. Where is Sandra? TL;DR: kitchen. Sandra went to the office. Daniel went back to the garden. Where is Sandra? TL;DR:}
+        \item \texttt{custom} \textbf{[only for XSum]}: Come up with your own prompt format for article summarization (different from the ones we've shown!).
+    \end{enumerate}
+    In general, the idea of in-context learning is to format the support examples in the same way as the test example, to leverage the model's tendency toward imitation.
+
+    \textbf{Note 1: Due to a quirk with GPT-2 tokenization, you should not include a space at the end of your prompt before generation.}
+    
+    \textbf{Note 2: Be sure to shuffle the order of the support inputs/targets when you construct the prompt (we will need this randomization later).}
+    \item Implement greedy sampling in \texttt{icl.py:do\_sample()}. The GPT-2 models used in this and the following questions use an autoregressive factorization of the probability of a sequence, i.e. $p_\theta(\mathbf{x}) = \prod_t p_\theta(x_t \mid x_{<t})$. `Greedy' sampling means that given a context $x_{<t}$ producing a distribution over next tokens $p_\theta(x_t \mid x_{<t})$, we deterministically choose the next token $x_t$ to be the token with highest probability.
+    
+    \textbf{Note 3: Be sure you understand what each dimension of the model's output \texttt{logits} represents. Misinterpreting the dimensions of this output can lead to subtle bugs.}
+    
+    \item Finally, put the pieces together by completing the implementation of \texttt{icl.py:\allowbreak run\_icl()}, using your \texttt{get\_icl\_prompts()} and \texttt{do\_sample()} functions, as well as the HuggingFace tokenizer defined in the loop. \\ \emph{Hint}: Your solution here should be less than 5 lines of code.
+\end{enumerate}

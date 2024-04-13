@@ -1,0 +1,16 @@
+\item \points{2bi} {\bf Run ICL on bAbI}
+
+First, evaluate $k$-shot in-context performance on bAbI for GPT-2-medium (355M parameters) and full-size GPT-2 (1.5B parameters) for various values of $k$ with the command:
+    
+\texttt{\small python3 main.py --task run\_icl --model med,full --dataset babi --k 0,1,16}
+
+Plot the results with the command:
+
+\texttt{\small python3 main.py --task plot\_icl --model med,full --dataset babi --k 0,1,16}
+
+Your plots should look like:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{./figures/q2_babi_plot}
+    \caption{\textit{k}-shot in-context performance on bAbI for GPT-2-medium and full-size GPT-2 for various values of \textit{k}}
+\end{figure}

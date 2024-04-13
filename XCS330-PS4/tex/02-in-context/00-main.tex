@@ -1,0 +1,24 @@
+\section{In-context learning}
+
+A surprising property of large language models is their emergent ability to learn \textit{in-context}, that is, their ability to learn a task without updating any parameters at all. The name `in-context' comes from the fact that the learning is done by simply including several examples or a task description (or both!) prepended to a test input present to the model
+
+For example, for a question-answering task, to make a 2-shot prediction for a test input `Why is the sky blue?', rather than presenting the input:
+
+\texttt{Why is the sky blue?\textless generate\textgreater}
+
+we would simply prepend our 2 examples to the input:
+
+\texttt{Who is the US president? Joe Biden What is earth's tallest mountain? Mount... \\
+Everest Why is the sky blue?\textless generate\textgreater}
+
+In addition to few-shot in-context learning, models can often improve their zero-shot generalization if the input is formatted in a particular manner; for example, adding a \texttt{Q:} and \texttt{A:} prefix to the input and label, respectively:
+
+\texttt{Q: Why is the sky blue? A:\textless generate\textgreater}
+
+Finally, these two approaches can be combined, for example adding the \texttt{Q:} and \texttt{A:} markers to each example in the context as well as the test input.
+
+\begin{enumerate}[label={2.\alph*}]
+    \input{02-in-context/01-implement}
+    \input{02-in-context/02-evaluate-bAbI}
+    \input{02-in-context/03-evaluate-XSum}
+\end{enumerate}

@@ -1,0 +1,14 @@
+\item \points{3a} {\bf Implement Parameter-efficient Fine Tine}
+
+Finish the implementation for each version of parameter-efficient fine-tuning for GPT-2-Medium in 
+
+\texttt{ft.py:parameters\_to\_fine\_tune()}:
+
+\begin{enumerate}[label=(\roman*)]
+    \item \texttt{last}: Fine-tune only the last 2 transformer blocks
+    \item \texttt{first}: Fine-tune only first 2 transformer blocks
+    \item \texttt{middle}: Fine-tune only middle 2 transformer blocks
+\end{enumerate}
+This step simply requires selecting the correct subset of parameters for each version listed above in 
+
+\texttt{parameters\_to\_fine\_tune()}. Keep in mind you should be returning an iterable of \texttt{nn.Parameter} here, not \texttt{nn.Module}.

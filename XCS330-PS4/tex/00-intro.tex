@@ -1,0 +1,43 @@
+\LARGE \textbf{Few-Shot Learning with Pre-trained Language Models}
+\normalsize
+
+\textbf{Overview:} This assignment will explore several methods for performing few-shot (and zero-shot) learning with pre-trained language models (LMs), including variants of fine-tuning and in-context learning, using the HuggingFace library for loading pre-trained models and datasets. The goal of this assignment is to gain familiarity with performing few-shot learning with pre-trained LMs, learn about the relative strengths and weaknesses of fine-tuning and in-context learning, and explore some recent methods proposed for improving on the basic form of these algorithms.
+
+\textbf{Code Overview:} The code consists of several files to enable fine-tuning and in-context learning. You are expected to write the code in the following files:
+\begin{itemize}
+    \item \texttt{ft.py}: Fine-tuning script; you'll implement parameter selection, loss \& accuracy calculation, the LoRA implementation (this will be explained in Q2!), fine-tuning batch tokenization, and the model update step.
+    \item \texttt{icl.py}: In-context learning script; you'll implement prompt assembly and model sampling.
+\end{itemize}
+
+A detailed description for every function can be found in the comments. You are not expected to change any code except between the lines containing |### START_CODE_HERE ###| and |### END_CODE_HERE ###|.
+
+\textbf{Datasets}
+
+You'll explore three different language datasets in this assignment. The first, Amazon Reviews, is a classification dataset that you'll use for the warmup. The other two, XSum and bAbI, require generating open-ended language.
+
+\begin{enumerate}
+    \item For the fine-tuning warmup, we'll explore a simple text classification problem, a subset of the \href{https://huggingface.co/datasets/amazon\_us\_reviews}{Amazon Reviews} dataset. The portion of the Amazon Reviews dataset that we will consider contains paired video reviews and star ratings; the task we will consider will be five-way classification of a review into the number of stars its corresponding rating gave, among \texttt{\{1,2,3,4,5\}}. \textbf{You can expect accuracy numbers \textit{roughly} in the 0.2-0.4 range for Amazon Reviews in this assignment.}
+    \item \href{https://huggingface.co/datasets/xsum}{XSum}: The XSum dataset contains news articles from the BBC and corresponding one sentence summaries. The evaluation metric typically used for summarization is \textbf{\href{https://en.wikipedia.org/wiki/ROUGE_(metric)}{ROUGE} score}, which measures $n$-gram overlap between the target and prediction (how many words appear in both, how many bigrams, etc.). An \href{https://en.wikipedia.org/wiki/N-gram#Examples}{$n$-gram} is a subsequence of $n$ consecutive words, in this context.  \textbf{You can expect ROUGE scores \textit{roughly} in the 0.1-0.3 range for XSum in this assignment.}
+    \item \href{https://research.facebook.com/downloads/babi/}{bAbI} is a AI benchmark suite developed by Facebook AI Research. The task that we will use is a question-answering task that requires reasoning about contextual information that may or may not be relevant to answer a question. A sample question from the dataset is:
+    
+    \texttt{Mary went back to the office. John went to the bathroom. Where is Mary? In the office}
+    
+    \textbf{You can expect accuracy numbers \textit{roughly} in the 0.25-0.9 range for bAbI QA in this assignment.}
+\end{enumerate}
+
+All of these datasets are available through the HuggingFace library.
+
+\clearpage
+
+\textbf{Coding Deliverables}
+
+For this assignment, please submit the following files to gradescope to receive points for coding questions:
+\begin{itemize}
+    \item |src/submission/__init__.py|
+    \item |src/submission/ft.py|
+    \item |src/submission/icl.py|
+    \item |src/submission/results/ft/*.json|
+    \item |src/submission/results/icl/*.json|
+\end{itemize}
+
+\textbf{Note: due to the large amount of files required and the structure of the folders, the grader will only work when submitting a zip archive file containing the full content of the submission directory!}
